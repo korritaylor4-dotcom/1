@@ -38,8 +38,9 @@ export const deleteArticle = async (id) => {
 };
 
 // Breeds API
-export const getBreeds = async (filters = {}) => {
-  const response = await axios.get(`${API_URL}/breeds`, { params: filters });
+export const getBreeds = async (filters = {}, page = 1, limit = 12) => {
+  const params = { ...filters, page, limit };
+  const response = await axios.get(`${API_URL}/breeds`, { params });
   return response.data;
 };
 
