@@ -58,6 +58,9 @@ function App() {
           <Route path="/admin/breeds" element={<ProtectedRoute><BreedsList /></ProtectedRoute>} />
           <Route path="/admin/breeds/new" element={<ProtectedRoute><BreedEditor /></ProtectedRoute>} />
           <Route path="/admin/breeds/edit/:id" element={<ProtectedRoute><BreedEditor /></ProtectedRoute>} />
+          
+          <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="/admin/seo" element={<ProtectedRoute><SEOSettings /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </div>
