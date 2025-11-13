@@ -165,6 +165,11 @@ const Breeds = () => {
         </div>
 
         {/* Breeds Grid */}
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-gray-600">Loading breeds...</p>
+          </div>
+        ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredBreeds.map((breed) => (
             <Link
