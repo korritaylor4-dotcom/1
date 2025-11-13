@@ -118,31 +118,34 @@ class PetsLibAPITester:
             self.log_test("GET /api/articles/999 (404 test)", False, f"Exception: {str(e)}")
     
     def test_breeds_get_all(self):
-        """Test GET /api/breeds - should return 2 breeds"""
+        """Test GET /api/breeds - should return breeds with pagination"""
         try:
             response = self.session.get(f"{self.base_url}/breeds")
             if response.status_code == 200:
-                breeds = response.json()
-                if len(breeds) == 2:
-                    self.log_test("GET /api/breeds (2 breeds)", True, f"Found {len(breeds)} breeds")
+                data = response.json()
+                breeds = data.get('breeds', [])
+                pagination = data.get('pagination', {})
+                if len(breeds) > 0 and 'total' in pagination:
+                    self.log_test("GET /api/breeds (with pagination)", True, f"Found {len(breeds)} breeds, total: {pagination.get('total')}")
                 else:
-                    self.log_test("GET /api/breeds (2 breeds)", False, f"Expected 2, got {len(breeds)} breeds")
+                    self.log_test("GET /api/breeds (with pagination)", False, f"Invalid response format: {data}")
             else:
-                self.log_test("GET /api/breeds (2 breeds)", False, f"Status: {response.status_code}")
+                self.log_test("GET /api/breeds (with pagination)", False, f"Status: {response.status_code}")
         except Exception as e:
-            self.log_test("GET /api/breeds (2 breeds)", False, f"Exception: {str(e)}")
+            self.log_test("GET /api/breeds (with pagination)", False, f"Exception: {str(e)}")
     
     def test_breeds_filter_by_species(self):
         """Test GET /api/breeds?species=dog"""
         try:
             response = self.session.get(f"{self.base_url}/breeds?species=dog")
             if response.status_code == 200:
-                breeds = response.json()
+                data = response.json()
+                breeds = data.get('breeds', [])
                 dog_breeds = [b for b in breeds if b.get('species') == 'dog']
                 if len(dog_breeds) > 0 and len(dog_breeds) == len(breeds):
                     self.log_test("GET /api/breeds?species=dog", True, f"Found {len(dog_breeds)} dog breeds")
                 else:
-                    self.log_test("GET /api/breeds?species=dog", False, f"Filter not working properly")
+                    self.log_test("GET /api/breeds?species=dog", False, f"Filter not working properly. Found {len(breeds)} breeds, {len(dog_breeds)} dogs")
             else:
                 self.log_test("GET /api/breeds?species=dog", False, f"Status: {response.status_code}")
         except Exception as e:
