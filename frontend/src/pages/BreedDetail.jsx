@@ -72,6 +72,9 @@ const BreedDetail = () => {
         />
       )}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Breadcrumbs */}
+        {breed && <Breadcrumbs items={breadcrumbs} />}
+
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
