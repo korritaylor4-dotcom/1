@@ -18,7 +18,7 @@ const Header = () => {
               <PawPrint className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-              PetHub
+              PetsLib
             </span>
           </Link>
 
