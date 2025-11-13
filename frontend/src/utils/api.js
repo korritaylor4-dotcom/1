@@ -4,8 +4,9 @@ import { getAuthHeaders } from './auth';
 const API_URL = process.env.REACT_APP_BACKEND_URL + '/api';
 
 // Articles API
-export const getArticles = async (category = null) => {
-  const params = category ? { category } : {};
+export const getArticles = async (category = null, page = 1, limit = 12) => {
+  const params = { page, limit };
+  if (category) params.category = category;
   const response = await axios.get(`${API_URL}/articles`, { params });
   return response.data;
 };
