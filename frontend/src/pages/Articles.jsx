@@ -51,8 +51,33 @@ const Articles = () => {
 
   const filteredArticles = articles;
 
+  // SEO title and description
+  const categoryTitles = {
+    all: 'Pet Care Articles | PetsLib',
+    nutrition: 'Pet Nutrition Articles | PetsLib',
+    training: 'Pet Training Tips | PetsLib',
+    health: 'Pet Health Information | PetsLib',
+    care: 'Pet Care Guides | PetsLib'
+  };
+
+  const categoryDescriptions = {
+    all: 'Browse all pet care articles with expert advice on nutrition, training, health, and care.',
+    nutrition: 'Expert nutrition guides for your pets - balanced diets, feeding tips, and nutritional advice.',
+    training: 'Effective training techniques and behavioral guidance for dogs and cats.',
+    health: 'Comprehensive health guides, preventive care, and wellness tips for your pets.',
+    care: 'Essential pet care information, grooming tips, and home environment advice.'
+  };
+
+  const title = currentPage > 1 
+    ? `${categoryTitles[selectedCategory]} - Page ${currentPage}`
+    : categoryTitles[selectedCategory];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
+      <SEOHead
+        title={title}
+        description={categoryDescriptions[selectedCategory]}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
