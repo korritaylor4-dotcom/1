@@ -84,3 +84,82 @@ export const uploadImage = async (file, folder = 'general') => {
   });
   return response.data;
 };
+
+// Ratings API
+export const rateArticle = async (articleId, rating) => {
+  const response = await axios.post(`${API_URL}/articles/${articleId}/rate`, { rating });
+  return response.data;
+};
+
+export const getArticleRating = async (articleId) => {
+  const response = await axios.get(`${API_URL}/articles/${articleId}/rating`);
+  return response.data;
+};
+
+// Page Views API
+export const trackPageView = async (pageType, pageId) => {
+  const response = await axios.post(`${API_URL}/views/${pageType}/${pageId}`);
+  return response.data;
+};
+
+// Analytics API
+export const getPopularContent = async () => {
+  const response = await axios.get(`${API_URL}/analytics/popular`, {
+    headers: getAuthHeaders()
+  });
+  return response.data;
+};
+
+export const getAnalyticsStats = async () => {
+  const response = await axios.get(`${API_URL}/analytics/stats`, {
+    headers: getAuthHeaders()
+  });
+  return response.data;
+};
+
+// SEO API
+export const getSEOSettings = async () => {
+  const response = await axios.get(`${API_URL}/seo/settings`);
+  return response.data;
+};
+
+export const updateSEOSettings = async (settings) => {
+  const response = await axios.put(`${API_URL}/seo/settings`, settings, {
+    headers: getAuthHeaders()
+  });
+  return response.data;
+};
+
+export const getPageMeta = async (pageType, pageId) => {
+  const response = await axios.get(`${API_URL}/seo/meta/${pageType}/${pageId}`);
+  return response.data;
+};
+
+export const createPageMeta = async (metaData) => {
+  const response = await axios.post(`${API_URL}/seo/meta`, metaData, {
+    headers: getAuthHeaders()
+  });
+  return response.data;
+};
+
+export const updatePageMeta = async (pageType, pageId, metaData) => {
+  const response = await axios.put(`${API_URL}/seo/meta/${pageType}/${pageId}`, metaData, {
+    headers: getAuthHeaders()
+  });
+  return response.data;
+};
+
+// Search API
+export const searchContent = async (query) => {
+  const response = await axios.get(`${API_URL}/search`, {
+    params: { q: query }
+  });
+  return response.data;
+};
+
+export const getSearchSuggestions = async (query) => {
+  const response = await axios.get(`${API_URL}/search/suggestions`, {
+    params: { q: query }
+  });
+  return response.data;
+};
