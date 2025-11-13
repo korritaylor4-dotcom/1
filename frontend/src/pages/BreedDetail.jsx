@@ -21,9 +21,13 @@ const BreedDetail = () => {
       const data = await getBreed(id);
       setBreed(data);
       
+      // Track page view
+      trackPageView('breed', id).catch(err => console.error('Failed to track view:', err));
+      
       // Load related breeds
-      const all = await getBreeds({ species: data.species });
-      setRelatedBreeds(all.filter(b => b.id !== id).slice(0, 3));
+      const response = await getBreeds({ species: data.species });
+      const breedsData = response.breeds || response;
+      setRelatedBreeds(breedsData.filter(b => b.id !== id).slice(0, 3));
     } catch (error) {
       console.error('Error loading breed:', error);
     } finally {
