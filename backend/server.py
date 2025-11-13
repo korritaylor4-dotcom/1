@@ -430,16 +430,34 @@ async def get_popular_content(current_user: dict = Depends(get_current_user)):
         {"_id": 0}
     ).sort("views", -1).limit(10).to_list(10)
     
-    # Enrich with actual content
-    for item in top_articles:
-        article = await db.articles.find_one({"id": item["page_id"]}, {"_id": 0, "title": 1})
-        if article:
-            item["title"] = article.get("title", "Unknown")
+    # Enrich with actual content - OPTIMIZED: bulk queries instead of N+1
+    if top_articles:
+        article_ids = [item["page_id"] for item in top_articles]
+        articles_data = await db.articles.find(
+            {"id": {"$in": article_ids}},
+            {"_id": 0, "id": 1, "title": 1}
+        ).to_list(len(article_ids))
+        
+        # Create lookup dict
+        articles_lookup = {a["id"]: a["title"] for a in articles_data}
+        
+        # Enrich items
+        for item in top_articles:
+            item["title"] = articles_lookup.get(item["page_id"], "Unknown")
     
-    for item in top_breeds:
-        breed = await db.breeds.find_one({"id": item["page_id"]}, {"_id": 0, "name": 1})
-        if breed:
-            item["name"] = breed.get("name", "Unknown")
+    if top_breeds:
+        breed_ids = [item["page_id"] for item in top_breeds]
+        breeds_data = await db.breeds.find(
+            {"id": {"$in": breed_ids}},
+            {"_id": 0, "id": 1, "name": 1}
+        ).to_list(len(breed_ids))
+        
+        # Create lookup dict
+        breeds_lookup = {b["id"]: b["name"] for b in breeds_data}
+        
+        # Enrich items
+        for item in top_breeds:
+            item["name"] = breeds_lookup.get(item["page_id"], "Unknown")
     
     return {
         "articles": top_articles,
