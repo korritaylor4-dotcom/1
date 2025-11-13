@@ -115,10 +115,7 @@ const Breeds = () => {
             <Filter className="text-gray-600 w-5 h-5" />
             <div className="flex gap-3">
               <button
-                onClick={() => {
-                  setSelectedSpecies('all');
-                  setSelectedLetter('all');
-                }}
+                onClick={() => handleFilterChange('species', 'all')}
                 className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
                   selectedSpecies === 'all'
                     ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
@@ -128,10 +125,7 @@ const Breeds = () => {
                 All
               </button>
               <button
-                onClick={() => {
-                  setSelectedSpecies('dog');
-                  setSelectedLetter('all');
-                }}
+                onClick={() => handleFilterChange('species', 'dog')}
                 className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
                   selectedSpecies === 'dog'
                     ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
@@ -141,10 +135,7 @@ const Breeds = () => {
                 Dogs
               </button>
               <button
-                onClick={() => {
-                  setSelectedSpecies('cat');
-                  setSelectedLetter('all');
-                }}
+                onClick={() => handleFilterChange('species', 'cat')}
                 className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
                   selectedSpecies === 'cat'
                     ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
