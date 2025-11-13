@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getArticle, getArticles } from '../utils/api';
+import { getArticle, getArticles, trackPageView } from '../utils/api';
 import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
+import RatingWidget from '../components/RatingWidget';
+import Breadcrumbs from '../components/Breadcrumbs';
+import SEOHead from '../components/SEOHead';
 
 const ArticleDetail = () => {
   const { id } = useParams();
