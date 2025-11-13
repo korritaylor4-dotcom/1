@@ -34,6 +34,9 @@ class SEOSettings(BaseModel):
     home_title: str = "PetsLib - Your Complete Guide to Pet Care & Breeds"
     home_description: str = "Discover expert pet care advice, comprehensive breed information, and everything you need for your furry friends."
     
+    # Default author name
+    default_author: str = "PetsLib Editorial Team"
+    
     # Category pages
     nutrition_title: str = "Pet Nutrition Articles | PetsLib"
     nutrition_description: str = "Expert nutrition guides for your pets - balanced diets, feeding tips, and nutritional advice."
