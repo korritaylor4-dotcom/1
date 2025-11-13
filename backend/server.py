@@ -112,7 +112,7 @@ async def get_articles(category: Optional[str] = None):
     if category and category != "all":
         query["category"] = category
     
-    articles = await db.articles.find(query).sort("date", -1).to_list(1000)
+    articles = await db.articles.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
     return articles
 
 @api_router.get("/articles/{article_id}")
