@@ -3,8 +3,12 @@ from typing import List
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
-def generate_xml_sitemap(articles: List[dict], breeds: List[dict], base_url: str = "http://localhost:3000") -> str:
+import os
+
+def generate_xml_sitemap(articles: List[dict], breeds: List[dict], base_url: str = None) -> str:
     """Generate XML sitemap with all pages."""
+    if base_url is None:
+        base_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
     
     urlset = ET.Element('urlset')
     urlset.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
