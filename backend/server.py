@@ -118,7 +118,7 @@ async def get_articles(category: Optional[str] = None):
 @api_router.get("/articles/{article_id}")
 async def get_article(article_id: str):
     """Get single article by ID."""
-    article = await db.articles.find_one({"id": article_id})
+    article = await db.articles.find_one({"id": article_id}, {"_id": 0})
     if not article:
         raise HTTPException(status_code=404, detail="Article not found")
     return article
