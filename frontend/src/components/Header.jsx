@@ -5,6 +5,7 @@ import SearchBar from './SearchBar';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
