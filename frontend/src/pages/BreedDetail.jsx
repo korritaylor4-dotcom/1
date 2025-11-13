@@ -29,6 +29,14 @@ const BreedDetail = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading breed...</p>
+      </div>
+    );
+  }
+
   if (!breed) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -41,10 +49,6 @@ const BreedDetail = () => {
       </div>
     );
   }
-
-  const relatedBreeds = allBreeds
-    .filter(b => b.species === breed.species && b.id !== breed.id)
-    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
