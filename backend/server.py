@@ -160,7 +160,7 @@ async def update_article(
     )
     
     # Return updated article
-    updated_article = await db.articles.find_one({"id": article_id})
+    updated_article = await db.articles.find_one({"id": article_id}, {"_id": 0})
     return updated_article
 
 @api_router.delete("/articles/{article_id}")
