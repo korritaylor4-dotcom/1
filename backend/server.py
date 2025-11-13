@@ -420,12 +420,14 @@ async def get_popular_content(current_user: dict = Depends(get_current_user)):
     """Get most viewed articles and breeds (admin only)."""
     # Get top articles
     top_articles = await db.page_views.find(
-        {"page_type": "article"}
+        {"page_type": "article"},
+        {"_id": 0}
     ).sort("views", -1).limit(10).to_list(10)
     
     # Get top breeds
     top_breeds = await db.page_views.find(
-        {"page_type": "breed"}
+        {"page_type": "breed"},
+        {"_id": 0}
     ).sort("views", -1).limit(10).to_list(10)
     
     # Enrich with actual content
