@@ -297,6 +297,338 @@ async def delete_upload(
     return {"success": True, "message": "File deleted"}
 
 # =========================
+# Ratings Routes
+# =========================
+
+@api_router.post("/articles/{article_id}/rate")
+async def rate_article(article_id: str, rating_data: RatingSubmit):
+    """Submit a rating for an article (public endpoint)."""
+    # Check if article exists
+    article = await db.articles.find_one({"id": article_id})
+    if not article:
+        raise HTTPException(status_code=404, detail="Article not found")
+    
+    # Get or create rating record
+    rating_doc = await db.article_ratings.find_one({"article_id": article_id})
+    
+    if rating_doc:
+        # Update existing
+        new_total = rating_doc["total_ratings"] + 1
+        new_score = rating_doc["total_score"] + rating_data.rating
+        new_average = new_score / new_total
+        
+        await db.article_ratings.update_one(
+            {"article_id": article_id},
+            {"$set": {
+                "total_ratings": new_total,
+                "total_score": new_score,
+                "average_rating": round(new_average, 2),
+                "updated_at": datetime.utcnow()
+            }}
+        )
+    else:
+        # Create new
+        new_rating = ArticleRating(
+            article_id=article_id,
+            total_ratings=1,
+            total_score=rating_data.rating,
+            average_rating=float(rating_data.rating)
+        )
+        await db.article_ratings.insert_one(new_rating.dict())
+    
+    # Return updated rating
+    updated_rating = await db.article_ratings.find_one({"article_id": article_id}, {"_id": 0})
+    return updated_rating
+
+@api_router.get("/articles/{article_id}/rating")
+async def get_article_rating(article_id: str):
+    """Get rating for an article."""
+    rating = await db.article_ratings.find_one({"article_id": article_id}, {"_id": 0})
+    if not rating:
+        return ArticleRating(article_id=article_id).dict()
+    return rating
+
+# =========================
+# Page Views Routes
+# =========================
+
+@api_router.post("/views/{page_type}/{page_id}")
+async def track_page_view(page_type: str, page_id: str):
+    """Track page view (public endpoint)."""
+    if page_type not in ["article", "breed"]:
+        raise HTTPException(status_code=400, detail="Invalid page type")
+    
+    # Update or create view record
+    result = await db.page_views.update_one(
+        {"page_type": page_type, "page_id": page_id},
+        {
+            "$inc": {"views": 1},
+            "$set": {"updated_at": datetime.utcnow()},
+            "$setOnInsert": {
+                "page_type": page_type,
+                "page_id": page_id,
+                "created_at": datetime.utcnow()
+            }
+        },
+        upsert=True
+    )
+    
+    # Get updated view count
+    view_doc = await db.page_views.find_one({"page_type": page_type, "page_id": page_id}, {"_id": 0})
+    return view_doc
+
+@api_router.get("/analytics/popular")
+async def get_popular_content(current_user: dict = Depends(get_current_user)):
+    """Get most viewed articles and breeds (admin only)."""
+    # Get top articles
+    top_articles = await db.page_views.find(
+        {"page_type": "article"}
+    ).sort("views", -1).limit(10).to_list(10)
+    
+    # Get top breeds
+    top_breeds = await db.page_views.find(
+        {"page_type": "breed"}
+    ).sort("views", -1).limit(10).to_list(10)
+    
+    # Enrich with actual content
+    for item in top_articles:
+        article = await db.articles.find_one({"id": item["page_id"]}, {"_id": 0, "title": 1})
+        if article:
+            item["title"] = article.get("title", "Unknown")
+    
+    for item in top_breeds:
+        breed = await db.breeds.find_one({"id": item["page_id"]}, {"_id": 0, "name": 1})
+        if breed:
+            item["name"] = breed.get("name", "Unknown")
+    
+    return {
+        "articles": top_articles,
+        "breeds": top_breeds
+    }
+
+@api_router.get("/analytics/stats")
+async def get_analytics_stats(current_user: dict = Depends(get_current_user)):
+    """Get overall analytics stats (admin only)."""
+    # Total views
+    total_article_views = await db.page_views.aggregate([
+        {"$match": {"page_type": "article"}},
+        {"$group": {"_id": None, "total": {"$sum": "$views"}}}
+    ]).to_list(1)
+    
+    total_breed_views = await db.page_views.aggregate([
+        {"$match": {"page_type": "breed"}},
+        {"$group": {"_id": None, "total": {"$sum": "$views"}}}
+    ]).to_list(1)
+    
+    # Total ratings
+    total_ratings = await db.article_ratings.aggregate([
+        {"$group": {"_id": None, "total": {"$sum": "$total_ratings"}}}
+    ]).to_list(1)
+    
+    # Average rating across all articles
+    avg_rating = await db.article_ratings.aggregate([
+        {"$group": {"_id": None, "average": {"$avg": "$average_rating"}}}
+    ]).to_list(1)
+    
+    return {
+        "total_article_views": total_article_views[0]["total"] if total_article_views else 0,
+        "total_breed_views": total_breed_views[0]["total"] if total_breed_views else 0,
+        "total_ratings": total_ratings[0]["total"] if total_ratings else 0,
+        "average_rating": round(avg_rating[0]["average"], 2) if avg_rating else 0
+    }
+
+# =========================
+# SEO & Meta Tags Routes
+# =========================
+
+@api_router.get("/seo/settings")
+async def get_seo_settings():
+    """Get SEO settings."""
+    settings = await db.seo_settings.find_one({"id": "seo_settings"}, {"_id": 0})
+    if not settings:
+        # Return defaults
+        return SEOSettings().dict()
+    return settings
+
+@api_router.put("/seo/settings")
+async def update_seo_settings(
+    settings_update: SEOSettingsUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update SEO settings (admin only)."""
+    update_data = {k: v for k, v in settings_update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.utcnow()
+    
+    await db.seo_settings.update_one(
+        {"id": "seo_settings"},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    updated_settings = await db.seo_settings.find_one({"id": "seo_settings"}, {"_id": 0})
+    return updated_settings
+
+@api_router.get("/seo/meta/{page_type}/{page_id}")
+async def get_page_meta(page_type: str, page_id: str):
+    """Get custom meta tags for a page."""
+    meta = await db.page_meta.find_one(
+        {"page_type": page_type, "page_id": page_id},
+        {"_id": 0}
+    )
+    return meta if meta else {}
+
+@api_router.post("/seo/meta")
+async def create_page_meta(
+    meta_data: PageMetaCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Create custom meta tags for a page (admin only)."""
+    # Check if already exists
+    existing = await db.page_meta.find_one({
+        "page_type": meta_data.page_type,
+        "page_id": meta_data.page_id
+    })
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Meta tags already exist for this page")
+    
+    new_meta = PageMeta(**meta_data.dict())
+    await db.page_meta.insert_one(new_meta.dict())
+    return new_meta
+
+@api_router.put("/seo/meta/{page_type}/{page_id}")
+async def update_page_meta(
+    page_type: str,
+    page_id: str,
+    meta_update: PageMetaUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update custom meta tags for a page (admin only)."""
+    update_data = {k: v for k, v in meta_update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.utcnow()
+    
+    result = await db.page_meta.update_one(
+        {"page_type": page_type, "page_id": page_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Meta tags not found")
+    
+    updated_meta = await db.page_meta.find_one(
+        {"page_type": page_type, "page_id": page_id},
+        {"_id": 0}
+    )
+    return updated_meta
+
+# =========================
+# Search Routes
+# =========================
+
+@api_router.get("/search")
+async def search_content(q: str = Query(..., min_length=2)):
+    """Search across articles and breeds."""
+    results = []
+    
+    # Search articles
+    articles = await db.articles.find(
+        {
+            "$or": [
+                {"title": {"$regex": q, "$options": "i"}},
+                {"excerpt": {"$regex": q, "$options": "i"}},
+                {"content": {"$regex": q, "$options": "i"}},
+                {"category": {"$regex": q, "$options": "i"}}
+            ]
+        },
+        {"_id": 0, "id": 1, "title": 1, "excerpt": 1}
+    ).limit(10).to_list(10)
+    
+    for article in articles:
+        results.append({
+            "type": "article",
+            "id": article["id"],
+            "title": article["title"],
+            "excerpt": article["excerpt"][:150] + "..." if len(article["excerpt"]) > 150 else article["excerpt"],
+            "relevance": 1.0
+        })
+    
+    # Search breeds
+    breeds = await db.breeds.find(
+        {
+            "$or": [
+                {"name": {"$regex": q, "$options": "i"}},
+                {"temperament": {"$regex": q, "$options": "i"}},
+                {"origin": {"$regex": q, "$options": "i"}},
+                {"idealFor": {"$regex": q, "$options": "i"}}
+            ]
+        },
+        {"_id": 0, "id": 1, "name": 1, "size": 1, "temperament": 1}
+    ).limit(10).to_list(10)
+    
+    for breed in breeds:
+        excerpt = f"{breed['size']} breed with {', '.join(breed['temperament'][:3])} temperament"
+        results.append({
+            "type": "breed",
+            "id": breed["id"],
+            "title": breed["name"],
+            "excerpt": excerpt,
+            "relevance": 1.0
+        })
+    
+    return results
+
+@api_router.get("/search/suggestions")
+async def search_suggestions(q: str = Query(..., min_length=2)):
+    """Get search suggestions (autocomplete)."""
+    suggestions = []
+    
+    # Get article titles
+    articles = await db.articles.find(
+        {"title": {"$regex": f"^{q}", "$options": "i"}},
+        {"_id": 0, "title": 1}
+    ).limit(5).to_list(5)
+    
+    suggestions.extend([a["title"] for a in articles])
+    
+    # Get breed names
+    breeds = await db.breeds.find(
+        {"name": {"$regex": f"^{q}", "$options": "i"}},
+        {"_id": 0, "name": 1}
+    ).limit(5).to_list(5)
+    
+    suggestions.extend([b["name"] for b in breeds])
+    
+    return suggestions[:10]
+
+# =========================
+# Sitemap Routes
+# =========================
+
+@api_router.get("/sitemap.xml")
+async def get_xml_sitemap():
+    """Generate and return XML sitemap."""
+    from fastapi.responses import Response
+    
+    articles = await db.articles.find({}, {"_id": 0, "id": 1}).to_list(1000)
+    breeds = await db.breeds.find({}, {"_id": 0, "id": 1}).to_list(1000)
+    
+    xml_content = generate_xml_sitemap(articles, breeds)
+    
+    return Response(content=xml_content, media_type="application/xml")
+
+@api_router.get("/sitemap.html")
+async def get_html_sitemap():
+    """Generate and return HTML sitemap."""
+    from fastapi.responses import HTMLResponse
+    
+    articles = await db.articles.find({}, {"_id": 0, "id": 1, "title": 1, "category": 1}).to_list(1000)
+    breeds = await db.breeds.find({}, {"_id": 0, "id": 1, "name": 1, "species": 1}).to_list(1000)
+    
+    html_content = generate_html_sitemap(articles, breeds)
+    
+    return HTMLResponse(content=html_content)
+
+# =========================
 # Public Routes
 # =========================
 
