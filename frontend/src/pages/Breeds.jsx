@@ -81,11 +81,14 @@ const Breeds = () => {
 
   const filteredBreeds = allBreeds;
 
+  const shouldNoIndex = currentPage > 1 || selectedLetter !== 'all' || selectedSpecies !== 'all';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
       <SEOHead
         title={currentPage > 1 ? `Dog and Cat Breeds Directory - Page ${currentPage} | PetsLib` : 'Dog and Cat Breeds Directory | PetsLib'}
         description="Explore comprehensive information about dog and cat breeds with detailed profiles, care requirements, and temperament guides."
+        noindex={shouldNoIndex}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
