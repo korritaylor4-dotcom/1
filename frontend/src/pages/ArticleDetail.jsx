@@ -57,8 +57,43 @@ const ArticleDetail = () => {
     );
   }
 
+  // Prepare SEO data
+  const breadcrumbs = article ? [
+    { name: 'Articles', url: '/articles' },
+    { name: article.title, url: `/articles/${article.id}` }
+  ] : [];
+
+  const structuredData = article ? {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    'headline': article.title,
+    'description': article.excerpt,
+    'author': {
+      '@type': 'Person',
+      'name': article.author
+    },
+    'datePublished': article.date,
+    'dateModified': article.updated_at || article.date,
+    'publisher': {
+      '@type': 'Organization',
+      'name': 'PetsLib',
+      'logo': {
+        '@type': 'ImageObject',
+        'url': `${window.location.origin}/logo.png`
+      }
+    }
+  } : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
+      {article && (
+        <SEOHead
+          title={`${article.title} | PetsLib`}
+          description={article.excerpt}
+          breadcrumbs={breadcrumbs}
+          structuredData={structuredData}
+        />
+      )}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <button
