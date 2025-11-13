@@ -57,14 +57,10 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
           <Route path="/articles" element={<PublicLayout><Articles /></PublicLayout>} />
-          <Route path="/articles/nutrition" element={<PublicLayout><CategoryPage /></PublicLayout>} />
-          <Route path="/articles/training" element={<PublicLayout><CategoryPage /></PublicLayout>} />
-          <Route path="/articles/health" element={<PublicLayout><CategoryPage /></PublicLayout>} />
-          <Route path="/articles/care" element={<PublicLayout><CategoryPage /></PublicLayout>} />
+          <Route path="/articles/:category" element={<PublicLayout><CategoryPage /></PublicLayout>} />
           <Route path="/articles/:id" element={<PublicLayout><ArticleDetail /></PublicLayout>} />
           <Route path="/breeds" element={<PublicLayout><Breeds /></PublicLayout>} />
-          <Route path="/breeds/dogs" element={<PublicLayout><SpeciesPage /></PublicLayout>} />
-          <Route path="/breeds/cats" element={<PublicLayout><SpeciesPage /></PublicLayout>} />
+          <Route path="/breeds/:species" element={<PublicLayout><SpeciesPage /></PublicLayout>} />
           <Route path="/breeds/:id" element={<PublicLayout><BreedDetail /></PublicLayout>} />
 
           {/* Admin Routes */}
