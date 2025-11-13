@@ -1,12 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { articles } from '../mock';
+import { getArticle, getArticles } from '../utils/api';
 import { ArrowLeft, Calendar, Clock, User, Tag } from 'lucide-react';
 
 const ArticleDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const article = articles.find(a => a.id === id);
+  const [article, setArticle] = useState(null);
+  const [relatedArticles, setRelatedArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadArticle();
+  }, [id]);
+
+  const loadArticle = async () => {
+    try {
+      const data = await getArticle(id);
+      setArticle(data);
+      
+      // Load related articles
+      const all = await getArticles(data.category);
+      setRelatedArticles(all.filter(a => a.id !== id).slice(0, 3));
+    } catch (error) {
+      console.error('Error loading article:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!article) {
     return (
