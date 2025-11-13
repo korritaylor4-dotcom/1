@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PawPrint, BookOpen, Search, Heart, ArrowRight } from 'lucide-react';
 import { getArticles, getBreeds } from '../utils/api';
+import SEOHead from '../components/SEOHead';
 
 const Home = () => {
   const [featuredArticles, setFeaturedArticles] = useState([]);
