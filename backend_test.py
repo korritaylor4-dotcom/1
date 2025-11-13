@@ -354,6 +354,275 @@ class PetsLibAPITester:
                 self.log_test("POST /api/upload (no auth)", False, f"Expected 403, got {response.status_code}")
         except Exception as e:
             self.log_test("POST /api/upload (no auth)", False, f"Exception: {str(e)}")
+
+    # =========================
+    # NEW FEATURES TESTS
+    # =========================
+    
+    def test_ratings_api(self):
+        """Test Ratings API - POST and GET article ratings"""
+        try:
+            # Test rating article 1 with rating 5
+            rating_data = {"rating": 5}
+            response = self.session.post(f"{self.base_url}/articles/1/rate", json=rating_data)
+            if response.status_code == 200:
+                rating_result = response.json()
+                if rating_result.get("article_id") == "1" and rating_result.get("total_ratings") >= 1:
+                    self.log_test("POST /api/articles/1/rate (rating 5)", True, f"Rating submitted: {rating_result}")
+                else:
+                    self.log_test("POST /api/articles/1/rate (rating 5)", False, f"Invalid rating response: {rating_result}")
+            else:
+                self.log_test("POST /api/articles/1/rate (rating 5)", False, f"Status: {response.status_code}, Response: {response.text}")
+        except Exception as e:
+            self.log_test("POST /api/articles/1/rate (rating 5)", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test rating article 1 with rating 4 (second rating)
+            rating_data = {"rating": 4}
+            response = self.session.post(f"{self.base_url}/articles/1/rate", json=rating_data)
+            if response.status_code == 200:
+                rating_result = response.json()
+                if rating_result.get("total_ratings") >= 2:
+                    self.log_test("POST /api/articles/1/rate (rating 4)", True, f"Second rating submitted: {rating_result}")
+                else:
+                    self.log_test("POST /api/articles/1/rate (rating 4)", False, f"Rating count not updated: {rating_result}")
+            else:
+                self.log_test("POST /api/articles/1/rate (rating 4)", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("POST /api/articles/1/rate (rating 4)", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test getting article rating
+            response = self.session.get(f"{self.base_url}/articles/1/rating")
+            if response.status_code == 200:
+                rating = response.json()
+                if "average_rating" in rating and "total_ratings" in rating:
+                    self.log_test("GET /api/articles/1/rating", True, f"Rating retrieved: avg={rating.get('average_rating')}, total={rating.get('total_ratings')}")
+                else:
+                    self.log_test("GET /api/articles/1/rating", False, f"Invalid rating format: {rating}")
+            else:
+                self.log_test("GET /api/articles/1/rating", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/articles/1/rating", False, f"Exception: {str(e)}")
+
+    def test_search_api(self):
+        """Test Search API - search content and suggestions"""
+        try:
+            # Test search for nutrition
+            response = self.session.get(f"{self.base_url}/search?q=nutrition")
+            if response.status_code == 200:
+                results = response.json()
+                if isinstance(results, list) and len(results) > 0:
+                    nutrition_results = [r for r in results if "nutrition" in r.get("title", "").lower() or "nutrition" in r.get("excerpt", "").lower()]
+                    if len(nutrition_results) > 0:
+                        self.log_test("GET /api/search?q=nutrition", True, f"Found {len(nutrition_results)} nutrition results")
+                    else:
+                        self.log_test("GET /api/search?q=nutrition", False, f"No nutrition results found in {len(results)} results")
+                else:
+                    self.log_test("GET /api/search?q=nutrition", False, f"Invalid search results format: {results}")
+            else:
+                self.log_test("GET /api/search?q=nutrition", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/search?q=nutrition", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test search for golden (should find breed)
+            response = self.session.get(f"{self.base_url}/search?q=golden")
+            if response.status_code == 200:
+                results = response.json()
+                if isinstance(results, list):
+                    golden_results = [r for r in results if "golden" in r.get("title", "").lower()]
+                    if len(golden_results) > 0:
+                        self.log_test("GET /api/search?q=golden", True, f"Found {len(golden_results)} golden results")
+                    else:
+                        self.log_test("GET /api/search?q=golden", False, f"No golden results found in {len(results)} results")
+                else:
+                    self.log_test("GET /api/search?q=golden", False, f"Invalid search results format: {results}")
+            else:
+                self.log_test("GET /api/search?q=golden", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/search?q=golden", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test search suggestions (autocomplete)
+            response = self.session.get(f"{self.base_url}/search/suggestions?q=nutr")
+            if response.status_code == 200:
+                suggestions = response.json()
+                if isinstance(suggestions, list):
+                    self.log_test("GET /api/search/suggestions?q=nutr", True, f"Got {len(suggestions)} suggestions: {suggestions}")
+                else:
+                    self.log_test("GET /api/search/suggestions?q=nutr", False, f"Invalid suggestions format: {suggestions}")
+            else:
+                self.log_test("GET /api/search/suggestions?q=nutr", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/search/suggestions?q=nutr", False, f"Exception: {str(e)}")
+
+    def test_page_views_api(self):
+        """Test Page Views API - track views for articles and breeds"""
+        try:
+            # Test tracking article view
+            response = self.session.post(f"{self.base_url}/views/article/1")
+            if response.status_code == 200:
+                view_data = response.json()
+                if view_data.get("page_type") == "article" and view_data.get("page_id") == "1" and "views" in view_data:
+                    self.log_test("POST /api/views/article/1", True, f"Article view tracked: {view_data.get('views')} views")
+                else:
+                    self.log_test("POST /api/views/article/1", False, f"Invalid view data: {view_data}")
+            else:
+                self.log_test("POST /api/views/article/1", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("POST /api/views/article/1", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test tracking breed view
+            response = self.session.post(f"{self.base_url}/views/breed/golden-retriever")
+            if response.status_code == 200:
+                view_data = response.json()
+                if view_data.get("page_type") == "breed" and view_data.get("page_id") == "golden-retriever" and "views" in view_data:
+                    self.log_test("POST /api/views/breed/golden-retriever", True, f"Breed view tracked: {view_data.get('views')} views")
+                else:
+                    self.log_test("POST /api/views/breed/golden-retriever", False, f"Invalid view data: {view_data}")
+            else:
+                self.log_test("POST /api/views/breed/golden-retriever", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("POST /api/views/breed/golden-retriever", False, f"Exception: {str(e)}")
+
+    def test_analytics_api(self):
+        """Test Analytics API - requires authentication"""
+        if not self.auth_token:
+            self.log_test("Analytics API tests", False, "No auth token available")
+            return
+        
+        try:
+            # Test analytics stats
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            response = self.session.get(f"{self.base_url}/analytics/stats", headers=headers)
+            if response.status_code == 200:
+                stats = response.json()
+                expected_keys = ["total_article_views", "total_breed_views", "total_ratings", "average_rating"]
+                if all(key in stats for key in expected_keys):
+                    self.log_test("GET /api/analytics/stats", True, f"Stats retrieved: {stats}")
+                else:
+                    self.log_test("GET /api/analytics/stats", False, f"Missing stats keys: {stats}")
+            else:
+                self.log_test("GET /api/analytics/stats", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/analytics/stats", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test popular content
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            response = self.session.get(f"{self.base_url}/analytics/popular", headers=headers)
+            if response.status_code == 200:
+                popular = response.json()
+                if "articles" in popular and "breeds" in popular:
+                    self.log_test("GET /api/analytics/popular", True, f"Popular content retrieved: {len(popular['articles'])} articles, {len(popular['breeds'])} breeds")
+                else:
+                    self.log_test("GET /api/analytics/popular", False, f"Invalid popular content format: {popular}")
+            else:
+                self.log_test("GET /api/analytics/popular", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/analytics/popular", False, f"Exception: {str(e)}")
+
+    def test_seo_api(self):
+        """Test SEO API - settings and meta tags"""
+        try:
+            # Test getting SEO settings
+            response = self.session.get(f"{self.base_url}/seo/settings")
+            if response.status_code == 200:
+                settings = response.json()
+                if isinstance(settings, dict):
+                    self.log_test("GET /api/seo/settings", True, f"SEO settings retrieved: {list(settings.keys())}")
+                else:
+                    self.log_test("GET /api/seo/settings", False, f"Invalid settings format: {settings}")
+            else:
+                self.log_test("GET /api/seo/settings", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/seo/settings", False, f"Exception: {str(e)}")
+        
+        if not self.auth_token:
+            self.log_test("PUT /api/seo/settings", False, "No auth token available")
+            return
+        
+        try:
+            # Test updating SEO settings
+            headers = {"Authorization": f"Bearer {self.auth_token}"}
+            update_data = {"home_title": "Updated PetsLib - Your Pet Care Resource"}
+            response = self.session.put(f"{self.base_url}/seo/settings", json=update_data, headers=headers)
+            if response.status_code == 200:
+                updated_settings = response.json()
+                if updated_settings.get("home_title") == update_data["home_title"]:
+                    self.log_test("PUT /api/seo/settings", True, f"SEO settings updated: {updated_settings.get('home_title')}")
+                else:
+                    self.log_test("PUT /api/seo/settings", False, f"Update failed: {updated_settings}")
+            else:
+                self.log_test("PUT /api/seo/settings", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("PUT /api/seo/settings", False, f"Exception: {str(e)}")
+
+    def test_sitemaps_api(self):
+        """Test Sitemaps API - XML and HTML sitemaps"""
+        try:
+            # Test XML sitemap
+            response = self.session.get(f"{self.base_url}/sitemap.xml")
+            if response.status_code == 200:
+                xml_content = response.text
+                if "<?xml" in xml_content and "<urlset" in xml_content:
+                    self.log_test("GET /api/sitemap.xml", True, f"XML sitemap generated ({len(xml_content)} chars)")
+                else:
+                    self.log_test("GET /api/sitemap.xml", False, f"Invalid XML format: {xml_content[:100]}...")
+            else:
+                self.log_test("GET /api/sitemap.xml", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/sitemap.xml", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test HTML sitemap
+            response = self.session.get(f"{self.base_url}/sitemap.html")
+            if response.status_code == 200:
+                html_content = response.text
+                if "<html" in html_content and "<body" in html_content:
+                    self.log_test("GET /api/sitemap.html", True, f"HTML sitemap generated ({len(html_content)} chars)")
+                else:
+                    self.log_test("GET /api/sitemap.html", False, f"Invalid HTML format: {html_content[:100]}...")
+            else:
+                self.log_test("GET /api/sitemap.html", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/sitemap.html", False, f"Exception: {str(e)}")
+
+    def test_pagination_api(self):
+        """Test Pagination API - articles and breeds with pagination"""
+        try:
+            # Test articles pagination
+            response = self.session.get(f"{self.base_url}/articles?page=1&limit=3")
+            if response.status_code == 200:
+                data = response.json()
+                articles = data.get('articles', [])
+                pagination = data.get('pagination', {})
+                if len(articles) <= 3 and pagination.get('page') == 1 and pagination.get('limit') == 3:
+                    self.log_test("GET /api/articles?page=1&limit=3", True, f"Pagination works: {len(articles)} articles, page {pagination.get('page')}")
+                else:
+                    self.log_test("GET /api/articles?page=1&limit=3", False, f"Pagination failed: {data}")
+            else:
+                self.log_test("GET /api/articles?page=1&limit=3", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/articles?page=1&limit=3", False, f"Exception: {str(e)}")
+        
+        try:
+            # Test breeds pagination
+            response = self.session.get(f"{self.base_url}/breeds?page=1&limit=1")
+            if response.status_code == 200:
+                data = response.json()
+                breeds = data.get('breeds', [])
+                pagination = data.get('pagination', {})
+                if len(breeds) <= 1 and pagination.get('page') == 1 and pagination.get('limit') == 1:
+                    self.log_test("GET /api/breeds?page=1&limit=1", True, f"Pagination works: {len(breeds)} breeds, page {pagination.get('page')}")
+                else:
+                    self.log_test("GET /api/breeds?page=1&limit=1", False, f"Pagination failed: {data}")
+            else:
+                self.log_test("GET /api/breeds?page=1&limit=1", False, f"Status: {response.status_code}")
+        except Exception as e:
+            self.log_test("GET /api/breeds?page=1&limit=1", False, f"Exception: {str(e)}")
     
     def run_all_tests(self):
         """Run all API tests"""
