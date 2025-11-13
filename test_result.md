@@ -490,12 +490,82 @@ backend:
           comment: "✅ GET /api/breeds?page=1&limit=1 returns 1 breed with correct pagination metadata (page=1, limit=1). Breeds pagination working correctly."
 
 frontend:
-  # No frontend testing performed as per instructions
+  - task: "React Router - Category pages routing"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "user"
+          comment: "User reported 'nothing works!!!!!!' - complete application failure after recent feature additions"
+        - working: false
+          agent: "troubleshoot"
+          comment: "Identified routing issue: hardcoded routes (/articles/nutrition, /articles/training, etc.) instead of parameterized routes (/articles/:category)"
+        - working: true
+          agent: "main"
+          comment: "Fixed routing: replaced 4 hardcoded category routes with single /articles/:category route and 2 hardcoded species routes with single /breeds/:species route. CategoryPage.jsx and SpeciesPage.jsx now properly extract URL parameters via useParams()"
+
+  - task: "CategoryPage component - JSX syntax"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/CategoryPage.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Build error: escaped quotes in JSX (className=\\\"...\\\") causing babel parsing error - 'Expecting Unicode escape sequence \\uXXXX'"
+        - working: true
+          agent: "main"
+          comment: "Recreated entire file with proper unescaped quotes. CategoryPage now renders correctly with breadcrumbs, title, description, and article grid"
+
+  - task: "SpeciesPage component - JSX syntax"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/SpeciesPage.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Build error: escaped quotes in JSX (className=\\\"...\\\") causing babel parsing error"
+        - working: true
+          agent: "main"
+          comment: "Recreated entire file with proper unescaped quotes. SpeciesPage now renders correctly with search, alphabetical filtering, and breed grid"
+
+  - task: "ScrollToTop component"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "ScrollToTop component created and added to routing. Not visually tested yet but implementation is standard React Router pattern"
+
+  - task: "SEOHead component - noindex support"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/SEOHead.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Added noindex prop support to conditionally add <meta name='robots' content='noindex'> tag for paginated/filtered pages. Not tested yet"
 
 metadata:
-  created_by: "testing_agent"
-  version: "2.0"
-  test_sequence: 2
+  created_by: "main_agent"
+  version: "2.1"
+  test_sequence: 3
   run_ui: false
 
 test_plan:
