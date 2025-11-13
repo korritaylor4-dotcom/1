@@ -114,6 +114,15 @@ const Header = () => {
           </nav>
         </div>
       )}
+
+      {/* Search Overlay */}
+      {searchOpen && (
+        <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-amber-100 shadow-lg z-40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <SearchBar onClose={() => setSearchOpen(false)} />
+          </div>
+        </div>
+      )}
     </header>
   );
 };
