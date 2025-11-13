@@ -116,8 +116,11 @@ const Articles = () => {
           ))}
         </div>
 
+        </div>
+        )}
+
         {/* No Results */}
-        {filteredArticles.length === 0 && (
+        {!loading && filteredArticles.length === 0 && (
           <div className="text-center py-20">
             <p className="text-gray-500 text-lg">No articles found in this category.</p>
           </div>
