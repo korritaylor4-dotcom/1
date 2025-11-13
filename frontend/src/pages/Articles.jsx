@@ -92,7 +92,7 @@ const Articles = () => {
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryChange(category)}
               className={`px-6 py-3 rounded-xl font-semibold capitalize transition-all duration-300 ${
                 selectedCategory === category
                   ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg scale-105'
