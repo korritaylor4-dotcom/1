@@ -220,8 +220,6 @@ const Breeds = () => {
             </Link>
           ))}
         </div>
-
-        </div>
         )}
 
         {/* No Results */}
