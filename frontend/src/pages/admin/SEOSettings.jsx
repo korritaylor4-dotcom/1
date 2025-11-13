@@ -124,6 +124,24 @@ const SEOSettings = () => {
             </div>
           </div>
 
+          {/* Default Settings */}
+          <div className="bg-white rounded-2xl shadow-lg border border-amber-100 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Default Settings</h2>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="default_author">Default Author Name</Label>
+                <Input
+                  id="default_author"
+                  value={settings.default_author || ''}
+                  onChange={(e) => handleChange('default_author', e.target.value)}
+                  placeholder="PetsLib Editorial Team"
+                  className="mt-2"
+                />
+                <p className="text-xs text-gray-500 mt-1">This name will be used as the default author for new articles</p>
+              </div>
+            </div>
+          </div>
+
           {/* Category Pages */}
           <div className="bg-white rounded-2xl shadow-lg border border-amber-100 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Category Pages</h2>
