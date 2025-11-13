@@ -16,6 +16,8 @@ import ArticlesList from "./pages/admin/ArticlesList";
 import ArticleEditor from "./pages/admin/ArticleEditor";
 import BreedsList from "./pages/admin/BreedsList";
 import BreedEditor from "./pages/admin/BreedEditor";
+import Analytics from "./pages/admin/Analytics";
+import SEOSettings from "./pages/admin/SEOSettings";
 
 import { isAuthenticated } from "./utils/auth";
 
