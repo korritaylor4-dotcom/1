@@ -1,28 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getArticles } from '../utils/api';
 import { ArrowRight, Calendar, Clock, User } from 'lucide-react';
+import Pagination from '../components/Pagination';
+import SEOHead from '../components/SEOHead';
 
 const categories = ['all', 'nutrition', 'training', 'health', 'care'];
 
 const Articles = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [articles, setArticles] = useState([]);
+  const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
+  const currentPage = parseInt(searchParams.get('page') || '1');
 
   useEffect(() => {
     loadArticles();
-  }, [selectedCategory]);
+  }, [selectedCategory, currentPage]);
 
   const loadArticles = async () => {
+    setLoading(true);
     try {
-      const data = await getArticles(selectedCategory === 'all' ? null : selectedCategory);
-      setArticles(data);
+      const data = await getArticles(
+        selectedCategory === 'all' ? null : selectedCategory,
+        currentPage,
+        12
+      );
+      setArticles(data.articles || data);
+      setPagination(data.pagination);
     } catch (error) {
       console.error('Error loading articles:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setSearchParams({ category, page: '1' });
+  };
+
+  const handlePageChange = (page) => {
+    setSearchParams({ 
+      category: selectedCategory,
+      page: page.toString() 
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const filteredArticles = articles;
