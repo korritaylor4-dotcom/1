@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { articles, categories } from '../mock';
+import { getArticles } from '../utils/api';
 import { ArrowRight, Calendar, Clock, User } from 'lucide-react';
+
+const categories = ['all', 'nutrition', 'training', 'health', 'care'];
 
 const Articles = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredArticles = selectedCategory === 'all'
-    ? articles
-    : articles.filter(article => article.category === selectedCategory);
+  useEffect(() => {
+    loadArticles();
+  }, [selectedCategory]);
+
+  const loadArticles = async () => {
+    try {
+      const data = await getArticles(selectedCategory === 'all' ? null : selectedCategory);
+      setArticles(data);
+    } catch (error) {
+      console.error('Error loading articles:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredArticles = articles;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
