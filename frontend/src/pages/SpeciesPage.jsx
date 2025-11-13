@@ -84,45 +84,45 @@ const SpeciesPage = () => {
   const shouldNoIndex = currentPage > 1 || selectedLetter !== 'all';
 
   return (
-    <div className=\"min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50\">
+    <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
       <SEOHead
         title={title}
         description={info.description}
         breadcrumbs={breadcrumbs}
         noindex={shouldNoIndex}
       />
-      <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12\">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumbs */}
         <Breadcrumbs items={breadcrumbs} />
 
         {/* Header */}
-        <div className=\"text-center mb-12\">
+        <div className="text-center mb-12">
           <h1 className={`text-5xl font-bold mb-4 bg-gradient-to-r ${info.color} bg-clip-text text-transparent`}>
             {info.title}
           </h1>
-          <p className=\"text-xl text-gray-600 max-w-2xl mx-auto\">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             {info.description}
           </p>
         </div>
 
         {/* Search and Filter Section */}
-        <div className=\"bg-white rounded-2xl shadow-xl border border-amber-100 p-6 mb-8\">
+        <div className="bg-white rounded-2xl shadow-xl border border-amber-100 p-6 mb-8">
           {/* Search Bar */}
-          <div className=\"relative mb-6\">
-            <Search className=\"absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5\" />
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
-              type=\"text\"
-              placeholder=\"Search by breed name or temperament...\"
+              type="text"
+              placeholder="Search by breed name or temperament..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className=\"w-full pl-12 pr-4 py-4 border-2 border-amber-100 rounded-xl focus:border-amber-400 focus:outline-none transition-colors duration-200 text-gray-900 placeholder-gray-400\"
+              className="w-full pl-12 pr-4 py-4 border-2 border-amber-100 rounded-xl focus:border-amber-400 focus:outline-none transition-colors duration-200 text-gray-900 placeholder-gray-400"
             />
           </div>
 
           {/* Alphabetical Index */}
           <div>
-            <p className=\"text-sm font-semibold text-gray-700 mb-3\">Browse by Letter:</p>
-            <div className=\"flex flex-wrap gap-2\">
+            <p className="text-sm font-semibold text-gray-700 mb-3">Browse by Letter:</p>
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => handleFilterChange('all')}
                 className={`w-10 h-10 rounded-lg font-semibold transition-all duration-200 ${
@@ -152,25 +152,25 @@ const SpeciesPage = () => {
 
         {/* Results Count */}
         {pagination && (
-          <div className=\"mb-6\">
-            <p className=\"text-gray-600\">
-              Showing <span className=\"font-semibold text-gray-900\">{pagination.total}</span> breed{pagination.total !== 1 ? 's' : ''}
+          <div className="mb-6">
+            <p className="text-gray-600">
+              Showing <span className="font-semibold text-gray-900">{pagination.total}</span> breed{pagination.total !== 1 ? 's' : ''}
             </p>
           </div>
         )}
 
         {/* Breeds Grid */}
         {loading ? (
-          <div className=\"text-center py-20\">
-            <p className=\"text-gray-600\">Loading breeds...</p>
+          <div className="text-center py-20">
+            <p className="text-gray-600">Loading breeds...</p>
           </div>
         ) : (
-        <div className=\"grid md:grid-cols-2 lg:grid-cols-3 gap-8\">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {allBreeds.map((breed) => (
             <Link
               key={breed.id}
               to={`/breeds/${breed.id}`}
-              className=\"bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-amber-100 group\"
+              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-amber-100 group"
             >
               {/* Breed Image Placeholder */}
               <div className={`h-64 bg-gradient-to-br ${
@@ -178,13 +178,13 @@ const SpeciesPage = () => {
                   ? 'from-amber-200 via-orange-200 to-amber-300'
                   : 'from-orange-200 via-amber-200 to-orange-300'
               } relative overflow-hidden`}>
-                <div className=\"absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/30 transition-all duration-300\"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/30 transition-all duration-300"></div>
               </div>
 
               {/* Breed Content */}
-              <div className=\"p-6\">
-                <div className=\"flex items-center justify-between mb-3\">
-                  <h3 className=\"text-2xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300\">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-amber-600 transition-colors duration-300">
                     {breed.name}
                   </h3>
                   <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
@@ -196,19 +196,19 @@ const SpeciesPage = () => {
                   </span>
                 </div>
 
-                <p className=\"text-gray-600 mb-4\">
-                  {breed.size} \u2022 {breed.weight} \u2022 {breed.lifespan}
+                <p className="text-gray-600 mb-4">
+                  {breed.size} • {breed.weight} • {breed.lifespan}
                 </p>
 
-                <div className=\"flex flex-wrap gap-2 mb-4\">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {breed.temperament.slice(0, 3).map((trait, idx) => (
-                    <span key={idx} className=\"px-3 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full\">
+                    <span key={idx} className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full">
                       {trait}
                     </span>
                   ))}
                 </div>
 
-                <p className=\"text-sm text-gray-600 leading-relaxed\">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   {breed.idealFor}
                 </p>
               </div>
@@ -218,14 +218,14 @@ const SpeciesPage = () => {
         )}
 
         {!loading && allBreeds.length === 0 && (
-          <div className=\"text-center py-20\">
-            <p className=\"text-gray-500 text-lg\">No breeds found matching your criteria.</p>
+          <div className="text-center py-20">
+            <p className="text-gray-500 text-lg">No breeds found matching your criteria.</p>
             <button
               onClick={() => {
                 setSearchTerm('');
                 handleFilterChange('all');
               }}
-              className=\"mt-4 px-6 py-3 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition-colors duration-200\"
+              className="mt-4 px-6 py-3 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition-colors duration-200"
             >
               Clear Filters
             </button>
