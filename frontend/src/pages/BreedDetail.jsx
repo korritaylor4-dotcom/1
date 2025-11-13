@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getBreed, getBreeds } from '../utils/api';
+import { getBreed, getBreeds, trackPageView } from '../utils/api';
 import { ArrowLeft, Heart, Info, Activity, Scissors, GraduationCap, Home } from 'lucide-react';
+import Breadcrumbs from '../components/Breadcrumbs';
+import SEOHead from '../components/SEOHead';
 
 const BreedDetail = () => {
   const { id } = useParams();
