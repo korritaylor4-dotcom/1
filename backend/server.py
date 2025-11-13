@@ -250,7 +250,7 @@ async def update_breed(
     )
     
     # Return updated breed
-    updated_breed = await db.breeds.find_one({"id": breed_id})
+    updated_breed = await db.breeds.find_one({"id": breed_id}, {"_id": 0})
     return updated_breed
 
 @api_router.delete("/breeds/{breed_id}")
