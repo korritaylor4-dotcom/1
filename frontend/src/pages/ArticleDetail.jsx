@@ -29,6 +29,14 @@ const ArticleDetail = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Loading article...</p>
+      </div>
+    );
+  }
+
   if (!article) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -41,10 +49,6 @@ const ArticleDetail = () => {
       </div>
     );
   }
-
-  const relatedArticles = articles
-    .filter(a => a.category === article.category && a.id !== article.id)
-    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
