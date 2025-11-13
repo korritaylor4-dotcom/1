@@ -205,7 +205,7 @@ async def get_breeds(
 @api_router.get("/breeds/{breed_id}")
 async def get_breed(breed_id: str):
     """Get single breed by ID."""
-    breed = await db.breeds.find_one({"id": breed_id})
+    breed = await db.breeds.find_one({"id": breed_id}, {"_id": 0})
     if not breed:
         raise HTTPException(status_code=404, detail="Breed not found")
     return breed
