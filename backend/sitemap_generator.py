@@ -57,8 +57,10 @@ def generate_xml_sitemap(articles: List[dict], breeds: List[dict], base_url: str
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ", encoding="UTF-8").decode('utf-8')
 
-def generate_html_sitemap(articles: List[dict], breeds: List[dict], base_url: str = "http://localhost:3000") -> str:
+def generate_html_sitemap(articles: List[dict], breeds: List[dict], base_url: str = None) -> str:
     """Generate HTML sitemap for human users."""
+    if base_url is None:
+        base_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
     
     # Group articles by category
     articles_by_category = {}
