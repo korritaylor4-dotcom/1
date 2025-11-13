@@ -209,9 +209,11 @@ async def delete_article(
 async def get_breeds(
     species: Optional[str] = None,
     letter: Optional[str] = None,
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=12, ge=1, le=50)
 ):
-    """Get all breeds with optional filters."""
+    """Get all breeds with optional filters and pagination."""
     query = {}
     
     if species and species != "all":
@@ -226,8 +228,24 @@ async def get_breeds(
             {"temperament": {"$regex": search, "$options": "i"}}
         ]
     
-    breeds = await db.breeds.find(query, {"_id": 0}).sort("name", 1).to_list(1000)
-    return breeds
+    # Get total count
+    total = await db.breeds.count_documents(query)
+    
+    # Calculate skip
+    skip = (page - 1) * limit
+    
+    # Get paginated breeds
+    breeds = await db.breeds.find(query, {"_id": 0}).sort("name", 1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "breeds": breeds,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "total_pages": (total + limit - 1) // limit
+        }
+    }
 
 @api_router.get("/breeds/{breed_id}")
 async def get_breed(breed_id: str):
