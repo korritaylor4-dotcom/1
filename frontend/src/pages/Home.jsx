@@ -15,10 +15,13 @@ const Home = () => {
 
   const loadData = async () => {
     try {
-      const [articles, breeds] = await Promise.all([
-        getArticles(),
-        getBreeds()
+      const [articlesResponse, breedsResponse] = await Promise.all([
+        getArticles(null, 1, 3),
+        getBreeds({}, 1, 20)
       ]);
+      
+      const articles = articlesResponse.articles || articlesResponse;
+      const breeds = breedsResponse.breeds || breedsResponse;
       
       setFeaturedArticles(articles.slice(0, 3));
       setFeaturedDogs(breeds.filter(b => b.species === 'dog').slice(0, 3));
