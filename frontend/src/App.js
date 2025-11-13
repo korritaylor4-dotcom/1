@@ -17,8 +17,10 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
+import CategoryPage from "./pages/CategoryPage";
 import Breeds from "./pages/Breeds";
 import BreedDetail from "./pages/BreedDetail";
+import SpeciesPage from "./pages/SpeciesPage";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
