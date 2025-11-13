@@ -1,5 +1,5 @@
 import React from 'react';
-import { PawPrint, Heart } from 'lucide-react';
+import { PawPrint } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
