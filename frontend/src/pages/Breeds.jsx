@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { getBreeds } from '../utils/api';
 import { Search, Filter } from 'lucide-react';
+import Pagination from '../components/Pagination';
+import SEOHead from '../components/SEOHead';
 
 const Breeds = () => {
   const [searchTerm, setSearchTerm] = useState('');
