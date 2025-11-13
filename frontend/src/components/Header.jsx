@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { PawPrint, Menu, X } from 'lucide-react';
+import { PawPrint, Menu, X, Search } from 'lucide-react';
+import SearchBar from './SearchBar';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
