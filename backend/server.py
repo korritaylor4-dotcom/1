@@ -16,11 +16,18 @@ from models import (
     Article, ArticleCreate, ArticleUpdate,
     Breed, BreedCreate, BreedUpdate
 )
+from models_extended import (
+    ArticleRating, RatingSubmit,
+    PageView, SEOSettings, SEOSettingsUpdate,
+    PageMeta, PageMetaCreate, PageMetaUpdate,
+    SearchResult
+)
 from auth import (
     get_password_hash, verify_password, create_access_token,
     get_current_user
 )
 from utils.file_upload import save_upload_file, delete_file
+from sitemap_generator import generate_xml_sitemap, generate_html_sitemap
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
