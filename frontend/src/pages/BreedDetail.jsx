@@ -1,12 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { allBreeds } from '../mock';
+import { getBreed, getBreeds } from '../utils/api';
 import { ArrowLeft, Heart, Info, Activity, Scissors, GraduationCap, Home } from 'lucide-react';
 
 const BreedDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const breed = allBreeds.find(b => b.id === id);
+  const [breed, setBreed] = useState(null);
+  const [relatedBreeds, setRelatedBreeds] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadBreed();
+  }, [id]);
+
+  const loadBreed = async () => {
+    try {
+      const data = await getBreed(id);
+      setBreed(data);
+      
+      // Load related breeds
+      const all = await getBreeds({ species: data.species });
+      setRelatedBreeds(all.filter(b => b.id !== id).slice(0, 3));
+    } catch (error) {
+      console.error('Error loading breed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!breed) {
     return (
