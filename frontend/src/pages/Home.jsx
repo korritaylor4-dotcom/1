@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PawPrint, BookOpen, Search, Heart, ArrowRight } from 'lucide-react';
-import { articles, dogBreeds, catBreeds } from '../mock';
+import { getArticles, getBreeds } from '../utils/api';
 
 const Home = () => {
-  const featuredArticles = articles.slice(0, 3);
-  const featuredDogs = dogBreeds.slice(0, 3);
-  const featuredCats = catBreeds.slice(0, 3);
+  const [featuredArticles, setFeaturedArticles] = useState([]);
+  const [featuredDogs, setFeaturedDogs] = useState([]);
+  const [featuredCats, setFeaturedCats] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const [articles, breeds] = await Promise.all([
+        getArticles(),
+        getBreeds()
+      ]);
+      
+      setFeaturedArticles(articles.slice(0, 3));
+      setFeaturedDogs(breeds.filter(b => b.species === 'dog').slice(0, 3));
+      setFeaturedCats(breeds.filter(b => b.species === 'cat').slice(0, 3));
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen">
