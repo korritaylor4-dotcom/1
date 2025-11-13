@@ -72,11 +72,14 @@ const Articles = () => {
     ? `${categoryTitles[selectedCategory]} - Page ${currentPage}`
     : categoryTitles[selectedCategory];
 
+  const shouldNoIndex = currentPage > 1;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
       <SEOHead
         title={title}
         description={categoryDescriptions[selectedCategory]}
+        noindex={shouldNoIndex}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
