@@ -172,6 +172,15 @@ const Articles = () => {
             <p className="text-gray-500 text-lg">No articles found in this category.</p>
           </div>
         )}
+
+        {/* Pagination */}
+        {pagination && pagination.total_pages > 1 && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.total_pages}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
     </div>
   );
