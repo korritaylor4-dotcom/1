@@ -113,14 +113,34 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 # =========================
 
 @api_router.get("/articles")
-async def get_articles(category: Optional[str] = None):
-    """Get all articles with optional category filter."""
+async def get_articles(
+    category: Optional[str] = None,
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=12, ge=1, le=50)
+):
+    """Get all articles with optional category filter and pagination."""
     query = {}
     if category and category != "all":
         query["category"] = category
     
-    articles = await db.articles.find(query, {"_id": 0}).sort("date", -1).to_list(1000)
-    return articles
+    # Get total count
+    total = await db.articles.count_documents(query)
+    
+    # Calculate skip
+    skip = (page - 1) * limit
+    
+    # Get paginated articles
+    articles = await db.articles.find(query, {"_id": 0}).sort("date", -1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "articles": articles,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "total_pages": (total + limit - 1) // limit
+        }
+    }
 
 @api_router.get("/articles/{article_id}")
 async def get_article(article_id: str):
