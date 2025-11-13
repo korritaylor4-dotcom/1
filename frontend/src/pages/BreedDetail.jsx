@@ -128,7 +128,10 @@ const BreedDetail = () => {
               </div>
               <h2 className="text-2xl font-bold text-gray-900 ml-4">History</h2>
             </div>
-            <p className="text-gray-700 leading-relaxed">{breed.history}</p>
+            <div 
+              className="text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: breed.history }}
+            />
           </div>
 
           {/* Ideal For */}
