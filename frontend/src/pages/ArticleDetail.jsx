@@ -22,9 +22,13 @@ const ArticleDetail = () => {
       const data = await getArticle(id);
       setArticle(data);
       
+      // Track page view
+      trackPageView('article', id).catch(err => console.error('Failed to track view:', err));
+      
       // Load related articles
-      const all = await getArticles(data.category);
-      setRelatedArticles(all.filter(a => a.id !== id).slice(0, 3));
+      const response = await getArticles(data.category);
+      const articlesData = response.articles || response;
+      setRelatedArticles(articlesData.filter(a => a.id !== id).slice(0, 3));
     } catch (error) {
       console.error('Error loading article:', error);
     } finally {
