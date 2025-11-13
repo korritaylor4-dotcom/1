@@ -61,7 +61,7 @@ const SEOHead = ({ title, description, breadcrumbs = [], structuredData = null, 
         document.head.appendChild(structuredScript);
       }
     }
-  }, [title, description, breadcrumbs, structuredData]);
+  }, [title, description, breadcrumbs, structuredData, noindex]);
 
   return null;
 };
