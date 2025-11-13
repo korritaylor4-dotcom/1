@@ -6,25 +6,64 @@ import Pagination from '../components/Pagination';
 import SEOHead from '../components/SEOHead';
 
 const Breeds = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSpecies, setSelectedSpecies] = useState('all');
-  const [selectedLetter, setSelectedLetter] = useState('all');
+  const [selectedSpecies, setSelectedSpecies] = useState(searchParams.get('species') || 'all');
+  const [selectedLetter, setSelectedLetter] = useState(searchParams.get('letter') || 'all');
   const [allBreeds, setAllBreeds] = useState([]);
+  const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
+  const currentPage = parseInt(searchParams.get('page') || '1');
 
   useEffect(() => {
     loadBreeds();
-  }, []);
+  }, [selectedSpecies, selectedLetter, searchTerm, currentPage]);
 
   const loadBreeds = async () => {
+    setLoading(true);
     try {
-      const data = await getBreeds();
-      setAllBreeds(data);
+      const filters = {};
+      if (selectedSpecies !== 'all') filters.species = selectedSpecies;
+      if (selectedLetter !== 'all') filters.letter = selectedLetter;
+      if (searchTerm) filters.search = searchTerm;
+      
+      const data = await getBreeds(filters, currentPage, 12);
+      setAllBreeds(data.breeds || data);
+      setPagination(data.pagination);
     } catch (error) {
       console.error('Error loading breeds:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilterChange = (type, value) => {
+    const newParams = {
+      species: selectedSpecies,
+      letter: selectedLetter,
+      page: '1'
+    };
+    
+    if (type === 'species') {
+      newParams.species = value;
+      newParams.letter = 'all'; // Reset letter when species changes
+      setSelectedSpecies(value);
+      setSelectedLetter('all');
+    } else if (type === 'letter') {
+      newParams.letter = value;
+      setSelectedLetter(value);
+    }
+    
+    setSearchParams(newParams);
+  };
+
+  const handlePageChange = (page) => {
+    setSearchParams({
+      species: selectedSpecies,
+      letter: selectedLetter,
+      page: page.toString()
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Generate alphabet array
