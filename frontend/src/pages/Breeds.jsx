@@ -258,14 +258,22 @@ const Breeds = () => {
             <button
               onClick={() => {
                 setSearchTerm('');
-                setSelectedSpecies('all');
-                setSelectedLetter('all');
+                handleFilterChange('species', 'all');
               }}
               className="mt-4 px-6 py-3 bg-amber-500 text-white font-semibold rounded-xl hover:bg-amber-600 transition-colors duration-200"
             >
               Clear Filters
             </button>
           </div>
+        )}
+
+        {/* Pagination */}
+        {pagination && pagination.total_pages > 1 && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.total_pages}
+            onPageChange={handlePageChange}
+          />
         )}
       </div>
     </div>
