@@ -56,8 +56,21 @@ const BreedDetail = () => {
     );
   }
 
+  // Prepare SEO data
+  const breadcrumbs = breed ? [
+    { name: 'Breeds', url: '/breeds' },
+    { name: breed.name, url: `/breeds/${breed.id}` }
+  ] : [];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
+      {breed && (
+        <SEOHead
+          title={`${breed.name} - Breed Information | PetsLib`}
+          description={`Complete guide to ${breed.name}: ${breed.temperament.join(', ')} temperament. ${breed.idealFor}`}
+          breadcrumbs={breadcrumbs}
+        />
+      )}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <button
