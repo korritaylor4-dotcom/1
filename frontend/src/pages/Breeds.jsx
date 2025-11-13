@@ -221,8 +221,11 @@ const Breeds = () => {
           ))}
         </div>
 
+        </div>
+        )}
+
         {/* No Results */}
-        {filteredBreeds.length === 0 && (
+        {!loading && filteredBreeds.length === 0 && (
           <div className="text-center py-20">
             <p className="text-gray-500 text-lg">No breeds found matching your criteria.</p>
             <button
