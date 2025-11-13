@@ -135,6 +135,16 @@ const Dashboard = () => {
                 View Public Site
               </Button>
             </Link>
+            <Link to="/admin/analytics">
+              <Button variant="outline" className="w-full border-amber-200 hover:bg-amber-50">
+                View Analytics
+              </Button>
+            </Link>
+            <Link to="/admin/seo">
+              <Button variant="outline" className="w-full border-amber-200 hover:bg-amber-50">
+                SEO Settings
+              </Button>
+            </Link>
             <Link to="/admin/articles/new">
               <Button variant="outline" className="w-full border-amber-200 hover:bg-amber-50">
                 Create New Article
@@ -143,6 +153,11 @@ const Dashboard = () => {
             <Link to="/admin/breeds/new">
               <Button variant="outline" className="w-full border-amber-200 hover:bg-amber-50">
                 Add New Breed
+              </Button>
+            </Link>
+            <Link to="/api/sitemap.html" target="_blank">
+              <Button variant="outline" className="w-full border-amber-200 hover:bg-amber-50">
+                View Sitemap
               </Button>
             </Link>
           </div>
