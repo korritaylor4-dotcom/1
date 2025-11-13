@@ -79,16 +79,7 @@ const Breeds = () => {
     return Array.from(letters).sort();
   }, [selectedSpecies]);
 
-  // Filter breeds
-  const filteredBreeds = useMemo(() => {
-    return allBreeds.filter(breed => {
-      const matchesSearch = breed.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           breed.temperament.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesSpecies = selectedSpecies === 'all' || breed.species === selectedSpecies;
-      const matchesLetter = selectedLetter === 'all' || breed.name.charAt(0).toUpperCase() === selectedLetter;
-      return matchesSearch && matchesSpecies && matchesLetter;
-    });
-  }, [searchTerm, selectedSpecies, selectedLetter]);
+  const filteredBreeds = allBreeds;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-orange-50">
