@@ -159,6 +159,11 @@ const ArticleDetail = () => {
           </div>
         </article>
 
+        {/* Rating Widget */}
+        <div className="mt-8">
+          <RatingWidget articleId={id} />
+        </div>
+
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
           <div className="mt-16">
