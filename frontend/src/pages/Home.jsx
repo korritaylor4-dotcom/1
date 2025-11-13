@@ -36,6 +36,10 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <SEOHead
+        title="PetsLib - Your Complete Guide to Pet Care & Breeds"
+        description="Discover expert pet care advice, comprehensive breed information, and everything you need for your furry friends."
+      />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
