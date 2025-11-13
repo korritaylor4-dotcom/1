@@ -14,7 +14,7 @@ const Footer = () => {
                 <PawPrint className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                PetHub
+                PetsLib
               </span>
             </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
