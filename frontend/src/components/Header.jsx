@@ -56,6 +56,12 @@ const Header = () => {
             >
               Breeds
             </Link>
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-amber-50 hover:text-amber-600 transition-all duration-200"
+            >
+              <Search className="w-5 h-5" />
+            </button>
           </nav>
 
           {/* Mobile menu button */}
