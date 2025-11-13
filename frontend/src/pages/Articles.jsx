@@ -115,8 +115,6 @@ const Articles = () => {
             </Link>
           ))}
         </div>
-
-        </div>
         )}
 
         {/* No Results */}
