@@ -62,6 +62,7 @@ class SEOSettings(BaseModel):
 class SEOSettingsUpdate(BaseModel):
     home_title: Optional[str] = None
     home_description: Optional[str] = None
+    default_author: Optional[str] = None
     nutrition_title: Optional[str] = None
     nutrition_description: Optional[str] = None
     training_title: Optional[str] = None
