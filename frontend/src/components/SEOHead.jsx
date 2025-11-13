@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SEOHead = ({ title, description, breadcrumbs = [], structuredData = null }) => {
+const SEOHead = ({ title, description, breadcrumbs = [], structuredData = null, noindex = false }) => {
   useEffect(() => {
     // Set title
     document.title = title || 'PetsLib - Your Complete Guide to Pet Care & Breeds';
@@ -13,6 +13,22 @@ const SEOHead = ({ title, description, breadcrumbs = [], structuredData = null }
       document.head.appendChild(metaDescription);
     }
     metaDescription.content = description || 'Discover expert pet care advice, comprehensive breed information, and everything you need for your furry friends.';
+
+    // Set robots meta tag for noindex
+    let metaRobots = document.querySelector('meta[name="robots"]');
+    if (noindex) {
+      if (!metaRobots) {
+        metaRobots = document.createElement('meta');
+        metaRobots.name = 'robots';
+        document.head.appendChild(metaRobots);
+      }
+      metaRobots.content = 'noindex';
+    } else {
+      // Remove noindex if it exists
+      if (metaRobots) {
+        metaRobots.remove();
+      }
+    }
 
     // Add structured data (JSON-LD)
     if (structuredData || breadcrumbs.length > 0) {
