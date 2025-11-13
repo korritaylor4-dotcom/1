@@ -106,9 +106,10 @@ const ArticleDetail = () => {
               <p className="text-xl text-gray-700 leading-relaxed mb-6">
                 {article.excerpt}
               </p>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {article.content}
-              </p>
+              <div 
+                className="text-gray-700 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: article.content }}
+              />
             </div>
           </div>
         </article>
