@@ -58,31 +58,34 @@ class PetsLibAPITester:
             self.log_test("Root endpoint", False, f"Exception: {str(e)}")
     
     def test_articles_get_all(self):
-        """Test GET /api/articles - should return 6 articles"""
+        """Test GET /api/articles - should return articles with pagination"""
         try:
             response = self.session.get(f"{self.base_url}/articles")
             if response.status_code == 200:
-                articles = response.json()
-                if len(articles) == 6:
-                    self.log_test("GET /api/articles (6 articles)", True, f"Found {len(articles)} articles")
+                data = response.json()
+                articles = data.get('articles', [])
+                pagination = data.get('pagination', {})
+                if len(articles) > 0 and 'total' in pagination:
+                    self.log_test("GET /api/articles (with pagination)", True, f"Found {len(articles)} articles, total: {pagination.get('total')}")
                 else:
-                    self.log_test("GET /api/articles (6 articles)", False, f"Expected 6, got {len(articles)} articles")
+                    self.log_test("GET /api/articles (with pagination)", False, f"Invalid response format: {data}")
             else:
-                self.log_test("GET /api/articles (6 articles)", False, f"Status: {response.status_code}")
+                self.log_test("GET /api/articles (with pagination)", False, f"Status: {response.status_code}")
         except Exception as e:
-            self.log_test("GET /api/articles (6 articles)", False, f"Exception: {str(e)}")
+            self.log_test("GET /api/articles (with pagination)", False, f"Exception: {str(e)}")
     
     def test_articles_filter_by_category(self):
         """Test GET /api/articles?category=nutrition"""
         try:
             response = self.session.get(f"{self.base_url}/articles?category=nutrition")
             if response.status_code == 200:
-                articles = response.json()
+                data = response.json()
+                articles = data.get('articles', [])
                 nutrition_articles = [a for a in articles if a.get('category') == 'nutrition']
                 if len(nutrition_articles) > 0 and len(nutrition_articles) == len(articles):
                     self.log_test("GET /api/articles?category=nutrition", True, f"Found {len(nutrition_articles)} nutrition articles")
                 else:
-                    self.log_test("GET /api/articles?category=nutrition", False, f"Filter not working properly")
+                    self.log_test("GET /api/articles?category=nutrition", False, f"Filter not working properly. Found {len(articles)} articles, {len(nutrition_articles)} nutrition")
             else:
                 self.log_test("GET /api/articles?category=nutrition", False, f"Status: {response.status_code}")
         except Exception as e:
