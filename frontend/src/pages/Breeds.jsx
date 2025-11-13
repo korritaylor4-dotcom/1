@@ -1,12 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { allBreeds } from '../mock';
+import { getBreeds } from '../utils/api';
 import { Search, Filter } from 'lucide-react';
 
 const Breeds = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSpecies, setSelectedSpecies] = useState('all');
   const [selectedLetter, setSelectedLetter] = useState('all');
+  const [allBreeds, setAllBreeds] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadBreeds();
+  }, []);
+
+  const loadBreeds = async () => {
+    try {
+      const data = await getBreeds();
+      setAllBreeds(data);
+    } catch (error) {
+      console.error('Error loading breeds:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Generate alphabet array
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
