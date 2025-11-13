@@ -199,7 +199,7 @@ async def get_breeds(
             {"temperament": {"$regex": search, "$options": "i"}}
         ]
     
-    breeds = await db.breeds.find(query).sort("name", 1).to_list(1000)
+    breeds = await db.breeds.find(query, {"_id": 0}).sort("name", 1).to_list(1000)
     return breeds
 
 @api_router.get("/breeds/{breed_id}")
