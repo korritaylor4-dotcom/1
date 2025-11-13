@@ -185,11 +185,13 @@ const Breeds = () => {
         </div>
 
         {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{filteredBreeds.length}</span> breed{filteredBreeds.length !== 1 ? 's' : ''}
-          </p>
-        </div>
+        {pagination && (
+          <div className="mb-6">
+            <p className="text-gray-600">
+              Showing <span className="font-semibold text-gray-900">{pagination.total}</span> breed{pagination.total !== 1 ? 's' : ''}
+            </p>
+          </div>
+        )}
 
         {/* Breeds Grid */}
         {loading ? (
