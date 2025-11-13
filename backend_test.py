@@ -626,7 +626,7 @@ class PetsLibAPITester:
     
     def run_all_tests(self):
         """Run all API tests"""
-        print(f"🚀 Starting PetsLib API Tests")
+        print(f"🚀 Starting Comprehensive PetsLib API Tests")
         print(f"📍 Base URL: {self.base_url}")
         print("=" * 60)
         
@@ -666,9 +666,31 @@ class PetsLibAPITester:
         self.test_uploads_directory_accessible()
         self.test_upload_endpoint_requires_auth()
         
+        # NEW FEATURES TESTS
+        print("\n⭐ Testing Ratings API...")
+        self.test_ratings_api()
+        
+        print("\n🔍 Testing Search API...")
+        self.test_search_api()
+        
+        print("\n👁️ Testing Page Views API...")
+        self.test_page_views_api()
+        
+        print("\n📊 Testing Analytics API...")
+        self.test_analytics_api()
+        
+        print("\n🔧 Testing SEO API...")
+        self.test_seo_api()
+        
+        print("\n🗺️ Testing Sitemaps API...")
+        self.test_sitemaps_api()
+        
+        print("\n📄 Testing Pagination API...")
+        self.test_pagination_api()
+        
         # Summary
         print("\n" + "=" * 60)
-        print("📊 TEST SUMMARY")
+        print("📊 COMPREHENSIVE TEST SUMMARY")
         print("=" * 60)
         
         passed = sum(1 for result in self.test_results if result['success'])
