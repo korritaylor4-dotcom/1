@@ -152,7 +152,7 @@ const Breeds = () => {
             <p className="text-sm font-semibold text-gray-700 mb-3">Browse by Letter:</p>
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={() => setSelectedLetter('all')}
+                onClick={() => handleFilterChange('letter', 'all')}
                 className={`w-10 h-10 rounded-lg font-semibold transition-all duration-200 ${
                   selectedLetter === 'all'
                     ? 'bg-amber-500 text-white shadow-md'
@@ -166,7 +166,7 @@ const Breeds = () => {
                 return (
                   <button
                     key={letter}
-                    onClick={() => isAvailable && setSelectedLetter(letter)}
+                    onClick={() => isAvailable && handleFilterChange('letter', letter)}
                     disabled={!isAvailable}
                     className={`w-10 h-10 rounded-lg font-semibold transition-all duration-200 ${
                       selectedLetter === letter
