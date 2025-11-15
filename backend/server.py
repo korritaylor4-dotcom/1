@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-# !!! УДАЛЕНЫ ИМПОРТЫ, КОТОРЫЕ МОГУТ ВЫЗЫВАТЬ СБОЙ НА RENDER !!!
-# Это сделано для стабильного запуска сервера
+# !!! ВРЕМЕННО УДАЛЕНЫ ИМПОРТЫ АВТОРИЗАЦИИ И МОДЕЛЕЙ, КОТОРЫЕ ВЫЗЫВАЮТ СБОЙ !!!
+# Это сделано для стабильного запуска сервера на Render (обход ошибки bcrypt/passlib)
 # from auth import get_password_hash, verify_password, create_access_token, get_current_user
 # from models import User, UserCreate, UserLogin, Token, ...
 
@@ -632,4 +632,21 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000", # Для локальной разработки на вашем ПК
         "https://1-woad-eta.vercel.app", # Адрес фронтенда на Vercel
-        "https://emergent-api.onrender.com" # Адрес бэкенда на
+        "https://emergent-api.onrender.com" # Адрес бэкенда на Render
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
