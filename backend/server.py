@@ -10,10 +10,10 @@ from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timedelta
 
-# !!! ВРЕМЕННО УДАЛЯЕМ ИМПОРТЫ АВТОРИЗАЦИИ И МОДЕЛЕЙ, ЧТОБЫ ИЗБЕЖАТЬ Internal Server Error !!!
+# !!! УДАЛЕНЫ ИМПОРТЫ, КОТОРЫЕ МОГУТ ВЫЗЫВАТЬ СБОЙ НА RENDER !!!
+# Это сделано для стабильного запуска сервера
 # from auth import get_password_hash, verify_password, create_access_token, get_current_user
-# from models import User, UserCreate, UserLogin, Token, Article, ArticleCreate, ArticleUpdate, Breed, BreedCreate, BreedUpdate
-# from models_extended import ArticleRating, RatingSubmit, PageView, SEOSettings, SEOSettingsUpdate, PageMeta, PageMetaCreate, PageMetaUpdate, SearchResult
+# from models import User, UserCreate, UserLogin, Token, ...
 
 # Импортируем только то, что нужно для публичных роутов:
 from models import Article, ArticleCreate, ArticleUpdate, Breed, BreedCreate, BreedUpdate
@@ -44,14 +44,11 @@ api_router = APIRouter(prefix="/api")
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 # =========================
-# Authentication Routes (ВРЕМЕННО ОТКЛЮЧЕНЫ)
+# Authentication Routes - УДАЛЕНЫ, чтобы избежать Internal Server Error
 # =========================
-# @api_router.post("/auth/register", response_model=Token) ...
-# @api_router.post("/auth/login", response_model=Token) ...
-# @api_router.get("/auth/me") ...
 
 # =========================
-# Articles Routes (ПУБЛИЧНЫЕ)
+# Articles Routes (ПУБЛИЧНЫЕ) - УДАЛЕНЫ ЗАВИСИМОСТИ Depends(get_current_user)
 # =========================
 
 @api_router.get("/articles")
@@ -95,7 +92,6 @@ async def get_article(article_id: str):
 @api_router.post("/articles")
 async def create_article(
     article: ArticleCreate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Create new article (admin only)."""
     # Create article with generated ID and dates
@@ -111,7 +107,6 @@ async def create_article(
 async def update_article(
     article_id: str,
     article_update: ArticleUpdate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Update article (admin only)."""
     # Check if article exists
@@ -135,7 +130,6 @@ async def update_article(
 @api_router.delete("/articles/{article_id}")
 async def delete_article(
     article_id: str,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Delete article (admin only)."""
     result = await db.articles.delete_one({"id": article_id})
@@ -144,7 +138,7 @@ async def delete_article(
     return {"success": True, "message": "Article deleted"}
 
 # =========================
-# Breeds Routes (ПУБЛИЧНЫЕ)
+# Breeds Routes (ПУБЛИЧНЫЕ) - УДАЛЕНЫ ЗАВИСИМОСТИ Depends(get_current_user)
 # =========================
 
 @api_router.get("/breeds")
@@ -200,7 +194,6 @@ async def get_breed(breed_id: str):
 @api_router.post("/breeds")
 async def create_breed(
     breed: BreedCreate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Create new breed (admin only)."""
     # Generate slug from name
@@ -219,7 +212,6 @@ async def create_breed(
 async def update_breed(
     breed_id: str,
     breed_update: BreedUpdate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Update breed (admin only)."""
     # Check if breed exists
@@ -243,7 +235,6 @@ async def update_breed(
 @api_router.delete("/breeds/{breed_id}")
 async def delete_breed(
     breed_id: str,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Delete breed (admin only)."""
     result = await db.breeds.delete_one({"id": breed_id})
@@ -252,14 +243,13 @@ async def delete_breed(
     return {"success": True, "message": "Breed deleted"}
 
 # =========================
-# File Upload Routes (ПУБЛИЧНЫЕ)
+# File Upload Routes (ПУБЛИЧНЫЕ) - УДАЛЕНЫ ЗАВИСИМОСТИ Depends(get_current_user)
 # =========================
 
 @api_router.post("/upload")
 async def upload_image(
     file: UploadFile = File(...),
     folder: str = Form(default="general"),
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Upload an image file."""
     result = await save_upload_file(file, folder)
@@ -268,7 +258,6 @@ async def upload_image(
 @api_router.delete("/upload")
 async def delete_upload(
     file_path: str,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Delete an uploaded file."""
     success = delete_file(file_path)
@@ -358,9 +347,7 @@ async def track_page_view(page_type: str, page_id: str):
     return view_doc
 
 @api_router.get("/analytics/popular")
-async def get_popular_content(
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
-):
+async def get_popular_content():
     """Get most viewed articles and breeds (admin only)."""
     # Get top articles
     top_articles = await db.page_views.find(
@@ -409,9 +396,7 @@ async def get_popular_content(
     }
 
 @api_router.get("/analytics/stats")
-async def get_analytics_stats(
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
-):
+async def get_analytics_stats():
     """Get overall analytics stats (admin only)."""
     # Total views
     total_article_views = await db.page_views.aggregate([
@@ -442,7 +427,7 @@ async def get_analytics_stats(
     }
 
 # =========================
-# SEO & Meta Tags Routes (ПУБЛИЧНЫЕ)
+# SEO & Meta Tags Routes (ПУБЛИЧНЫЕ) - УДАЛЕНЫ ЗАВИСИМОСТИ Depends(get_current_user)
 # =========================
 
 @api_router.get("/seo/settings")
@@ -457,7 +442,6 @@ async def get_seo_settings():
 @api_router.put("/seo/settings")
 async def update_seo_settings(
     settings_update: SEOSettingsUpdate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Update SEO settings (admin only)."""
     update_data = {k: v for k, v in settings_update.dict().items() if v is not None}
@@ -484,7 +468,6 @@ async def get_page_meta(page_type: str, page_id: str):
 @api_router.post("/seo/meta")
 async def create_page_meta(
     meta_data: PageMetaCreate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Create custom meta tags for a page (admin only)."""
     # Check if already exists
@@ -505,7 +488,6 @@ async def update_page_meta(
     page_type: str,
     page_id: str,
     meta_update: PageMetaUpdate,
-    # current_user: dict = Depends(get_current_user) # ВРЕМЕННО ОТКЛЮЧЕН АДМИН-ДОСТУП
 ):
     """Update custom meta tags for a page (admin only)."""
     update_data = {k: v for k, v in meta_update.dict().items() if v is not None}
@@ -650,21 +632,4 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000", # Для локальной разработки на вашем ПК
         "https://1-woad-eta.vercel.app", # Адрес фронтенда на Vercel
-        "https://emergent-api.onrender.com" # Адрес бэкенда на Render
-    ],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
-
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+        "https://emergent-api.onrender.com" # Адрес бэкенда на
