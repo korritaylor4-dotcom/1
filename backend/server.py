@@ -158,8 +158,8 @@ async def get_breeds(
     
     if search:
         query["$or"] = [
-            {"name": {"$regex": search, "$options": "i"}},
-            {"temperament": {"$regex": search, "$options": "i"}}
+            {"name": {"$regex": q, "$options": "i"}},
+            {"temperament": {"$regex": q, "$options": "i"}}
         ]
     
     # Get total count
