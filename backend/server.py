@@ -37,9 +37,8 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# --- ИСПРАВЛЕНИЕ: Используем относительный путь для статических файлов ---
-# Создаем UPLOADS_DIR относительно расположения server.py
-UPLOADS_DIR = ROOT_DIR / "uploads"
+# --- ИСПРАВЛЕНИЕ: Используем абсолютный путь Render для uploads ---
+UPLOADS_DIR = Path("/opt/render/project/src/backend/uploads")
 UPLOADS_DIR.mkdir(exist_ok=True)
 # --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
