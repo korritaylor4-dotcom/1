@@ -6,14 +6,10 @@ from fastapi import UploadFile, HTTPException, status
 from PIL import Image
 from typing import Optional
 
-# --- ИСПРАВЛЕННЫЙ КОД ---
 # UPLOADS_DIR теперь использует относительный путь: папка "uploads" будет создана рядом с "backend/"
-# current_file_path.parent - это папка 'backend/utils', path.parent.parent - это папка 'backend'
-# Path(__file__).resolve().parent.parent.parent - это более надежный способ, но
-# Path(__file__).resolve().parent.parent - может быть '/app/backend/'
+# Мы используем Path(__file__).parent.parent, чтобы выйти в /backend/
 UPLOADS_DIR = Path(__file__).parent.parent / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
-# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
 # Allowed image extensions
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
@@ -52,18 +48,22 @@ async def save_upload_file(file: UploadFile, folder: str = "general") -> dict:
     
     # Save file
     try:
+        # FastAPI's UploadFile.file is an object that behaves like a file, copyfileobj uses it
+        file.file.seek(0) # Убедимся, что указатель в начале
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
         # Get image dimensions
         with Image.open(file_path) as img:
             width, height = img.size
+            # Format will be like 'JPEG', 'PNG'
             format_type = img.format
         
         # Get file size
         file_size = file_path.stat().st_size
         
         # Return file info
+        # NOTE: The 'path' here is the internal path used for deletion, not the public URL
         return {
             "filename": unique_filename,
             "path": str(file_path),
@@ -77,15 +77,18 @@ async def save_upload_file(file: UploadFile, folder: str = "general") -> dict:
         # Clean up file if save failed
         if file_path.exists():
             file_path.unlink()
+        # Пробрасываем HTTP 500 ошибку
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to save file: {str(e)}"
         )
     finally:
+        # Закрываем файловый дескриптор, предоставленный FastAPI
         file.file.close()
 
 def delete_file(file_path: str) -> bool:
     """Delete a file from local storage."""
+    # NOTE: file_path here is the internal absolute path returned by save_upload_file
     try:
         path = Path(file_path)
         if path.exists() and path.is_file():
@@ -95,7 +98,3 @@ def delete_file(file_path: str) -> bool:
     except Exception as e:
         print(f"Error deleting file: {str(e)}")
         return False
-
-def get_file_url(filename: str, folder: str = "general") -> str:
-    """Generate URL for uploaded file."""
-    return f"/api/uploads/{folder}/{filename}"
