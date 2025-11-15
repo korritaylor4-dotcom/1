@@ -37,9 +37,11 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# --- ИСПРАВЛЕНИЕ: Удалить лишнюю инициализацию uploads ---
 # Create uploads directory
-UPLOADS_DIR = Path("/app/backend/uploads")
+UPLOADS_DIR = ROOT_DIR / "uploads" # Используем относительный путь, основанный на расположении server.py
 UPLOADS_DIR.mkdir(exist_ok=True)
+# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
 # Create the main app
 app = FastAPI(title="PetsLib API", version="1.0.0")
