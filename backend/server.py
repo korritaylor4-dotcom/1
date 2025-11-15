@@ -37,9 +37,9 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# --- ИСПРАВЛЕНИЕ: Удалить лишнюю инициализацию uploads ---
-# Create uploads directory
-UPLOADS_DIR = ROOT_DIR / "uploads" # Используем относительный путь, основанный на расположении server.py
+# --- ИСПРАВЛЕНИЕ: Используем относительный путь для статических файлов ---
+# Создаем UPLOADS_DIR относительно расположения server.py
+UPLOADS_DIR = ROOT_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 # --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
@@ -699,16 +699,20 @@ async def root():
 # Include the router in the main app
 app.include_router(api_router)
 
+# --- ИСПРАВЛЕНИЕ: ЯВНО РАЗРЕШАЕМ АДРЕСА ФРОНТЕНДА И БЭКЕНДА ---
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
-        "https://1-woad-eta.vercel.app",
-        "https://emergent-api.onrender.com"
+        "http://localhost:3000", # Для локальной разработки на вашем ПК
+        "https://1-woad-eta.vercel.app", # Адрес фронтенда на Vercel
+        "https://emergent-api.onrender.com" # Адрес бэкенда на Render
     ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+
 
 # Configure logging
 logging.basicConfig(
