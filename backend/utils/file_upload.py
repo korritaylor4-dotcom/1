@@ -6,9 +6,14 @@ from fastapi import UploadFile, HTTPException, status
 from PIL import Image
 from typing import Optional
 
-# Create uploads directory if it doesn't exist
-UPLOADS_DIR = Path("/app/backend/uploads")
+# --- ИСПРАВЛЕННЫЙ КОД ---
+# UPLOADS_DIR теперь использует относительный путь: папка "uploads" будет создана рядом с "backend/"
+# current_file_path.parent - это папка 'backend/utils', path.parent.parent - это папка 'backend'
+# Path(__file__).resolve().parent.parent.parent - это более надежный способ, но
+# Path(__file__).resolve().parent.parent - может быть '/app/backend/'
+UPLOADS_DIR = Path(__file__).parent.parent / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
+# --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
 # Allowed image extensions
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
